@@ -15,15 +15,17 @@ parser.add_argument('-ss', '--start', help='Start of input to cut from', default
 parser.add_argument('-t', '--duration', help='Output duration')
 parser.add_argument('-to', '--end', help='Output time end')
 
-with open('timestamps.json') as output_json:
-    outputs = json.load(output_json)
-
 args = parser.parse_args()
 
+# with open('timestamps.json') as output_json:
+#     outputs = json.load(output_json)
+
+outputs = utils.textfile_to_output(args.output)
+
 for output in outputs:
-    start = utils.time_to_duration(output['start'])
-    if output['end']:
-        end = utils.times_to_duration(output['start'], output['end'])
-    else:
-        end = output['duration']
+    start = utils.parse_time(output['start'])
+    try:
+        end = float(output['end'])
+    except ValueError:
+        end = utils.parse_time(output['end']) - start
     f = FFMpeg(args.input, output['name'], start, end).run()
