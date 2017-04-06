@@ -1,6 +1,6 @@
 import sys
 from PyQt5.QtWidgets import *
-from PyQt5.QtGui import QIcon
+from PyQt5.QtGui import QFont
 
 from ffmpeg import FFMpeg
 import utils
@@ -21,13 +21,15 @@ class Window(QWidget):
 
         inputBtn = QPushButton('Video')
         inputBtn.setShortcut('Ctrl+O')
-        inputBtn.setStatusTip('Select video to split.')
+        inputBtn.setToolTip('Select video to split.')
         inputBtn.clicked.connect(self.inputFileDialog)
 
         runBtn = QPushButton('Run')
+        runBtn.setToolTip('Split Video.')
         runBtn.clicked.connect(self.run)
 
         addBtn = QPushButton('Add')
+        addBtn.setToolTip('Add another split.')
         addBtn.clicked.connect(self.addSegment)
 
         labelLayout = QHBoxLayout()
@@ -56,7 +58,23 @@ class Window(QWidget):
         hlayout = QHBoxLayout()
 
         timestampsEdit = QLineEdit()
+        timestampsEdit.setToolTip('''
+            The times to cut to make the output video.
+            exs:
+            3:00-480 Will cut the video from 3 minutes to 8 minutes
+            240+4:30 Will cut the video 4 minutes to 8:30 minutes
+            Plus means the second number will be the length of the vid
+            Minus means the second number will be the timestamp of where
+            the cut stops.
+        ''')
+
         nameEdit = QLineEdit()
+        nameEdit.setToolTip('''
+            Name of the outputed video file. Make sure
+            to end with the same extention.
+            ex: Input is in.mp4
+            All outputs should end with .mp4
+        ''')
 
         hlayout.addWidget(timestampsEdit)
         hlayout.addWidget(nameEdit)
