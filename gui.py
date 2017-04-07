@@ -1,4 +1,4 @@
-import sys
+import sys, textwrap
 from PyQt5.QtWidgets import *
 from PyQt5.QtGui import QFont
 
@@ -54,27 +54,39 @@ class Window(QWidget):
         self.setWindowTitle('Video Splitter')
         self.show()
 
+        # Check if FFmpeg is installed
+        if utils.which('fmpeg') is None:
+            ffmpegMsg = QMessageBox()
+            ffmpegMsg.setText(textwrap.dedent('''
+                It appears you do not have FFmpeg installed.
+                To run this program you need to have FFmpeg
+                installed and in your path.
+
+                To install: https://ffmpeg.org/
+            '''))
+            ffmpegMsg.exec()
+
     def addSegment(self):
         hlayout = QHBoxLayout()
 
         timestampsEdit = QLineEdit()
-        timestampsEdit.setToolTip('''
+        timestampsEdit.setToolTip(textwrap.dedent('''
             The times to cut to make the output video.
-            exs:
+            ex:
             3:00-480 Will cut the video from 3 minutes to 8 minutes
             240+4:30 Will cut the video 4 minutes to 8:30 minutes
             Plus means the second number will be the length of the vid
             Minus means the second number will be the timestamp of where
             the cut stops.
-        ''')
+        '''))
 
         nameEdit = QLineEdit()
-        nameEdit.setToolTip('''
+        nameEdit.setToolTip(textwrap.dedent('''
             Name of the outputed video file. Make sure
             to end with the same extention.
-            ex: Input is in.mp4
-            All outputs should end with .mp4
-        ''')
+                ex: Input file:  in.mp4
+                All outputs should end with .mp4
+        '''))
 
         hlayout.addWidget(timestampsEdit)
         hlayout.addWidget(nameEdit)
