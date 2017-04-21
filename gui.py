@@ -4,10 +4,12 @@ from PyQt5.QtGui import QFont
 
 from ffmpeg import FFMpeg
 import utils
+import getffmpeg
 
 class Window(QWidget):
     segmentLayout = QVBoxLayout()
     segments = []
+    ffmpeg_path = None
 
     def __init__(self):
         super().__init__()
@@ -55,15 +57,22 @@ class Window(QWidget):
         self.show()
 
         # Check if FFmpeg is installed
-        if utils.which('fmpeg') is None:
+        ffmpeg_path = getffmpeg.checkFFmpeg()
+        if isinstance(ffmpeg_path, str):
+            self.ffmpeg_path = ffmpeg_path
+        elif ffmpeg_path is False:
             ffmpegMsg = QMessageBox()
-            ffmpegMsg.setText(textwrap.dedent('''
-                It appears you do not have FFmpeg installed.
-                To run this program you need to have FFmpeg
-                installed and in your path.
+            if sys.platform == 'win32':
+                ffmpegMsg.setText('Downloading FFmpeg locally.')
+                getffmpeg.getFFmpeg()
+            else:
+                ffmpegMsg.setText(textwrap.dedent('''
+                    It appears you do not have FFmpeg installed.
+                    To run this program you need to have FFmpeg
+                    installed and in your path.
 
-                To install: https://ffmpeg.org/
-            '''))
+                    To install: https://ffmpeg.org/
+                '''))
             ffmpegMsg.exec()
 
     def addSegment(self):

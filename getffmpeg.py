@@ -35,9 +35,12 @@ def checkFFmpeg():
         return false
 
 def getFFmpeg():
+    if not os.path.isdir('./tmp'):
+        os.makedirs('./tmp')
+
     download(url, './tmp/ffmpeg.zip')
     unzip('./tmp/ffmpeg.zip', './')
     dirname = fnmatch.filter(os.listdir('.'), 'ffmpeg*win64*')[0]
     os.rename(dirname, 'ffmpeg')
 
-checkFFmpeg()
+    shutil.rmtree('./tmp')
