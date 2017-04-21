@@ -4,6 +4,7 @@ import shutil
 import os
 import fnmatch
 import utils
+import sys
 
 url = 'http://ffmpeg.zeranoe.com/builds/win64/static/ffmpeg-20170418-6108805-win64-static.zip'
 
@@ -20,19 +21,12 @@ def unzip(filename, path):
 
 def checkFFmpeg():
     if utils.which('ffmpeg'):
-        print('FFmpeg in path')
         return True
     elif sys.platform == 'win32':
         localpath = './ffmpeg/bin/'
-        print('FFmpeg not in path. Trying locally')
         if os.path.exists(localpath + 'ffmpeg.exe'):
-            print(localpath)
             return localpath
-        else:
-            print('Getting FFMpeg')
-            getFFmpeg()
-    else:
-        return false
+    return False
 
 def getFFmpeg():
     if not os.path.isdir('./tmp'):

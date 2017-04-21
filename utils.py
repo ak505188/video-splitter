@@ -1,5 +1,6 @@
 import re
 import os
+import sys
 
 def parse_time(time):
     try:
@@ -56,5 +57,9 @@ def which(program):
             exe_file = os.path.join(path, program)
             if is_exe(exe_file):
                 return exe_file
+            elif sys.platform == 'win32':
+                exe_file = exe_file + '.exe'
+                if is_exe(exe_file):
+                    return exe_file
 
     return None
