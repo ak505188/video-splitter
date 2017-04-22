@@ -59,7 +59,7 @@ class Window(QWidget):
         # Check if FFmpeg is installed
         ffmpeg_path = getffmpeg.checkFFmpeg()
         if isinstance(ffmpeg_path, str):
-            self.ffmpeg_path = ffmpeg_path
+            self.ffmpeg_path = ffmpeg_path + '.exe'
         elif ffmpeg_path is False:
             ffmpegMsg = QMessageBox()
             if sys.platform == 'win32':
@@ -120,7 +120,7 @@ class Window(QWidget):
             timestamps = utils.timestr_to_timestamps(segment['timestamps'].displayText())
             start = timestamps['start']
             end = timestamps['end']
-            FFMpeg(input, name, start, end).run()
+            FFMpeg(input, name, start, end, path=self.ffmpeg_path).run()
 
 if __name__ == '__main__':
     app = QApplication(sys.argv)
