@@ -5,12 +5,12 @@ Class responsible for interacting with ffmpeg
 import subprocess
 
 class FFMpeg(object):
-    def __init__(self, input_file, output_file, start=0, end=None, codec='copy', path=None):
-        self.input_file = input_file
-        self.output_file = output_file
+    def __init__(self, filenames, timestamps, codec='copy', path=None):
+        self.input_file = filenames['input']
+        self.output_file = filenames['output']
         # We are assuming that start and end are floats and represent duration
-        self.start = start
-        self.end = end
+        self.start = timestamps['start']
+        self.end = timestamps['end']
         self.codec = codec
         self.args = ['ffmpeg']
         if path:
@@ -18,7 +18,6 @@ class FFMpeg(object):
 
     def run(self):
         self._create_command()
-        print(self.args)
         subprocess.call(self.args)
 
     def _create_command(self):

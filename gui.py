@@ -1,4 +1,5 @@
-import sys, textwrap
+import sys
+import textwrap
 from PyQt5.QtWidgets import *
 from PyQt5.QtGui import QFont
 
@@ -16,8 +17,9 @@ class Window(QWidget):
         self.initUI()
 
     def initUI(self):
-        timestamps = QLabel('Timestamps')
-        name = QLabel('Name')
+        start = QLabel('Start')
+        end   = QLabel('End')
+        name  = QLabel('Name')
 
         self.inputEdit = QLineEdit()
 
@@ -35,7 +37,8 @@ class Window(QWidget):
         addBtn.clicked.connect(self.addSegment)
 
         labelLayout = QHBoxLayout()
-        labelLayout.addWidget(timestamps)
+        labelLayout.addWidget(start)
+        labelLayout.addWidget(end)
         labelLayout.addWidget(name)
 
         runLayout = QHBoxLayout()
@@ -78,33 +81,38 @@ class Window(QWidget):
     def addSegment(self):
         hlayout = QHBoxLayout()
 
-        timestampsEdit = QLineEdit()
-        timestampsEdit.setToolTip(textwrap.dedent('''
-            The times to cut to make the output video.
-            ex:
-            3:00-480 Will cut the video from 3 minutes to 8 minutes
-            240+4:30 Will cut the video 4 minutes to 8:30 minutes
-            Plus means the second number will be the length of the vid
-            Minus means the second number will be the timestamp of where
-            the cut stops.
-        '''))
+        startEdit = QLineEdit()
+        endEdit   = QLineEdit()
+        nameEdit  = QLineEdit()
 
-        nameEdit = QLineEdit()
-        nameEdit.setToolTip(textwrap.dedent('''
-            Name of the outputed video file. Make sure
-            to end with the same extention.
-                ex: Input file:  in.mp4
-                All outputs should end with .mp4
-        '''))
+        # timestampsEdit.setToolTip(textwrap.dedent('''
+        #     The times to cut to make the output video.
+        #     ex:
+        #     3:00-480 Will cut the video from 3 minutes to 8 minutes
+        #     240+4:30 Will cut the video 4 minutes to 8:30 minutes
+        #     Plus means the second number will be the length of the vid
+        #     Minus means the second number will be the timestamp of where
+        #     the cut stops.
+        # '''))
 
-        hlayout.addWidget(timestampsEdit)
+        # '''
+        # nameEdit.setToolTip(textwrap.dedent('''
+        #     Name of the outputed video file. Make sure
+        #     to end with the same extention.
+        #         ex: Input file:  in.mp4
+        #         All outputs should end with .mp4
+        # '''))
+
+        hlayout.addWidget(startEdit)
+        hlayout.addWidget(endEdit)
         hlayout.addWidget(nameEdit)
 
         self.segmentLayout.addLayout(hlayout)
 
         self.segments.append({
-            'timestamps': timestampsEdit,
-            'name': nameEdit,
+            'start' : startEdit,
+            'end'   : endEdit,
+            'name'  : nameEdit,
         })
 
 
@@ -114,13 +122,16 @@ class Window(QWidget):
             self.inputEdit.setText(str(self.input[0]))
 
     def run(self):
-        input = self.inputEdit.displayText()
+        inputfile = self.inputEdit.displayText()
         for segment in self.segments:
-            name  = segment['name'].displayText()
-            timestamps = utils.timestr_to_timestamps(segment['timestamps'].displayText())
-            start = timestamps['start']
-            end = timestamps['end']
-            FFMpeg(input, name, start, end, path=self.ffmpeg_path).run()
+            timestamps = {}
+            filenames  = {}
+
+            filenames['input']  = inputfile
+            filenames['output'] = segment['name'].displayText()
+            timestamps['start'] = utils.parse_time(segment['start'].displayText())
+            timestamps['end']   = utils.parse_time(segment['end'].displayText())
+            FFMpeg(filenames, timestamps, path=self.ffmpeg_path).run()
 
 if __name__ == '__main__':
     app = QApplication(sys.argv)
