@@ -134,7 +134,7 @@ class Window(QWidget):
                 timestamps['start'] = utils.parse_time(segment['start'].displayText())
                 timestamps['end']   = utils.parse_time(segment['end'].displayText())
             except ValueError:
-                print('Segment', index + 1, 'is invalid')
+                QMessageBox.about(self, 'Error', 'Segment %d is invalid.' % (index + 1))
                 return
 
             FFMpeg(filenames, timestamps, path=self.ffmpeg_path).run()
