@@ -3,6 +3,7 @@ Class responsible for interacting with ffmpeg
 '''
 
 import subprocess
+import utils
 
 class FFMpeg(object):
     def __init__(self, filenames, timestamps, codec='copy', path=None):
@@ -10,7 +11,7 @@ class FFMpeg(object):
         self.output_file = filenames['output']
         # We are assuming that start and end are floats and represent duration
         self.start = timestamps['start']
-        self.end = timestamps['end']
+        self.duration = timestamps['end'] - timestamps['start']
         self.codec = codec
         self.args = ['ffmpeg']
         if path:
@@ -36,9 +37,14 @@ class FFMpeg(object):
         self.args.append(self.input_file)
 
         self.args.append('-t')
-        self.args.append(str(self.end))
+        self.args.append(str(self.duration))
 
         self.args.append('-c')
         self.args.append(self.codec)
 
+        # Adds output file extention if it doesn't exist
+        input_ext = utils.getExt(self.input_file)
+        if input_ext and not utils.getExt(self.output_file):
+            self.output_file = self.output_file + '.' + input_ext
         self.args.append(self.output_file)
+

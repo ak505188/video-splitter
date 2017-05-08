@@ -8,9 +8,13 @@ def parse_time(time):
     except ValueError:
         rgx = '^(?:(?:(?P<hours>[0-9]+):)?(?:(?P<minutes>[0-5]?[0-9]):))?(?P<seconds>[0-5]?[0-9])$'
         tm_lst = re.search(rgx, time)
-        hours =  int(tm_lst.group('hours')) if tm_lst.group('hours') else 0
+        if tm_lst is None:
+            raise ValueError('Invalid time string')
+
+        hours = int(tm_lst.group('hours')) if tm_lst.group('hours') else 0
         minutes = int(tm_lst.group('minutes')) if tm_lst.group('minutes') else 0
         seconds = int(tm_lst.group('seconds')) if tm_lst.group('seconds') else 0
+
         return float(hours * 3600 + minutes * 60 + seconds)
 
 def timestr_to_timestamps(line):
@@ -62,4 +66,10 @@ def which(program):
                 if is_exe(exe_file):
                     return exe_file
 
+    return None
+
+def getExt(filename):
+    filename = filename.split('.')
+    if len(filename) > 1:
+        return filename[len(filename) - 1]
     return None

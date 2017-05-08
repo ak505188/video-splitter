@@ -123,14 +123,20 @@ class Window(QWidget):
 
     def run(self):
         inputfile = self.inputEdit.displayText()
-        for segment in self.segments:
+        for index, segment in enumerate(self.segments):
             timestamps = {}
             filenames  = {}
 
             filenames['input']  = inputfile
             filenames['output'] = segment['name'].displayText()
-            timestamps['start'] = utils.parse_time(segment['start'].displayText())
-            timestamps['end']   = utils.parse_time(segment['end'].displayText())
+
+            try:
+                timestamps['start'] = utils.parse_time(segment['start'].displayText())
+                timestamps['end']   = utils.parse_time(segment['end'].displayText())
+            except ValueError:
+                print('Segment', index + 1, 'is invalid')
+                return
+
             FFMpeg(filenames, timestamps, path=self.ffmpeg_path).run()
 
 if __name__ == '__main__':
